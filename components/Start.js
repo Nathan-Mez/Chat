@@ -78,12 +78,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   inputbox: { 
-    backgroundColor: 'white', 
+    backgroundColor: '#FFF', 
     padding: '6%', 
     marginHorizontal: '6%',
-    height: '44%',
     borderRadius: 4, 
-    justifyContent: 'space-between',
+    height: '44%',
+    justifyContent: 'space-around',
+    marginTop: '25%'
   },
   choosecolor: {
     borderRadius: 20,
