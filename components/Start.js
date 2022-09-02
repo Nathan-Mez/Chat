@@ -36,7 +36,7 @@ export default class Start extends React.Component {
 
       <View style = {{ flex: 1}}>
         <ImageBackground source={ require('../assets/Background-Image.png')} style = { styles.image }>
-          <Text style = {styles.title}>Chat-App</Text>
+          <Text style = {styles.title}>ChatApp</Text>
 
           <View style = {styles.inputbox}>
 
@@ -47,13 +47,13 @@ export default class Start extends React.Component {
               onChangeText={(name) => this.setState({ name })}>
             </TextInput>
 
-            <View style = {{height: '40%', marginVertical: '10%'}}>
+            <View style = {{height: '40%', marginVertical: '8%'}}>
               <Text style = {{ fontFamily: 'Poppins-Regular', color: '#777', fontSize: 17}}>Choose Background Color:</Text>
-               <View style = {{ flexDirection: 'row', justifyContent: 'center'}}>
-                <Button color="#090C08" title='' onPress={() => this.setState({ color: '#090C08' })} style={styles.choosecolor}/>  
-                <Button color="#474056" title='' onPress={() => this.setState({ color: '#474056' })} style={styles.choosecolor}/> 
-                <Button color="#8A95A5" title='' onPress={() => this.setState({ color: '#8A95A5' })} style={styles.choosecolor}/>  
-                <Button color="#B9C6AE" title='' onPress={() => this.setState({ color: '#B9C6AE' })} style={styles.choosecolor}/> 
+               <View style = {{ flexDirection: 'row', justifyContent: 'space-around', height: 40, marginVertical: '5%' }}>
+                <TouchableOpacity onPress={() => this.setState({ color: '#090C08' })} style={{minWidth: 37, backgroundColor: '#090C08', borderRadius: 20}}/> 
+                <TouchableOpacity onPress={() => this.setState({ color: '#474056' })} style={{minWidth: 37, backgroundColor: '#474056', borderRadius: 20}}/> 
+                <TouchableOpacity onPress={() => this.setState({ color: '#8A95A5' })} style={{minWidth: 37, backgroundColor: '#8A95A5', borderRadius: 20}}/>   
+                <TouchableOpacity onPress={() => this.setState({ color: '#B9C6AE' })} style={{minWidth: 37, backgroundColor: '#B9C6AE', borderRadius: 20}}/>
               </View>
             </View>  
 
@@ -83,15 +83,16 @@ const styles = StyleSheet.create({
     marginHorizontal: '6%',
     height: '44%',
     borderRadius: 4, 
-    justifyContent: 'center'
+    justifyContent: 'space-between',
   },
   choosecolor: {
-    borderRadius: 6,
-    width: 30,
+    borderRadius: 20,
+    minWidth: 37,
+    backgroundColor: '#B9C6AE' ,
   },
   textinput: {
     height: 50, 
-    alignSelf: 'center', 
+    fontFamily: 'Poppins-Regular',
     borderColor: '#aaa', 
     padding: 10,
     borderRadius: 4,
