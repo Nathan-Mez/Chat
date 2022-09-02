@@ -72,7 +72,7 @@ export default class Start extends React.Component {
 
 const styles = StyleSheet.create({
   title: { 
-    fontFamily: 'Poppins-Regular', 
+    fontFamily: 'Poppins-Bold', 
     fontSize: 45, 
     color: '#FFF', 
     alignSelf: 'center',
