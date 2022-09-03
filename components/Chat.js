@@ -9,6 +9,7 @@ let customFonts = { 'Poppins-Regular': require('../assets/fonts/Poppins-Regular.
 
 export default class Chat extends React.Component {
 
+
   async _loadFontsAsync() {
     await Font.loadAsync(customFonts);
     
@@ -16,9 +17,15 @@ export default class Chat extends React.Component {
 
   componentDidMount(){
     let name = this.props.route.params.name;
-    this.props.navigation.setOptions({ title: name });
+    if ( name === '') {                //Set navigation title to 'Chat Screen' if there's no userinput
+      name = 'Chat Screen'
+    }
 
-    this._loadFontsAsync();
+    this.props.navigation.setOptions({ 
+      title: name, 
+    });
+    
+    this._loadFontsAsync();              //When component is mounted customFonts is loaded using '_loadFontsAsynd()' hook
   }
   
 
