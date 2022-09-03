@@ -16,8 +16,8 @@ export default class Start extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        name: '',
-        color: '',
+        name: '',   
+        color: '#CDC7B7',          //Default background color for chat screen
     };
   }
 
@@ -27,6 +27,11 @@ export default class Start extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
+    this.props.navigation.setOptions({ 
+      headerStyle: {
+        backgroundColor: '#EEE',
+     }
+    });
   }
 
 
@@ -74,7 +79,7 @@ const styles = StyleSheet.create({
   title: { 
     fontFamily: 'Poppins-Bold', 
     fontSize: 45, 
-    color: '#FFF', 
+    color: '#DEE', 
     alignSelf: 'center',
   },
   inputbox: { 
