@@ -3,13 +3,7 @@
    choose a background color for the chat screen before joining the chat.
 */
 import React from 'react';
-import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity, } from 'react-native';
-import * as Font from 'expo-font';
-
-let customFonts = { 
-  'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
-  'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
- };
+import { StyleSheet, View, Text, ScrollView, TextInput, ImageBackground, TouchableOpacity, Image } from 'react-native';
 
 export default class Start extends React.Component {
 
@@ -17,16 +11,11 @@ export default class Start extends React.Component {
     super(props);
     this.state = {
         name: '',   
-        color: '#CDC7B7',          //Default background color for chat screen
+        color: '#EFEDE7',          //Default background color for chat screen
     };
   }
 
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-  }
-
   componentDidMount() {
-    this._loadFontsAsync();
     this.props.navigation.setOptions({ 
       headerStyle: {
         backgroundColor: '#EEE',
@@ -34,12 +23,10 @@ export default class Start extends React.Component {
     });
   }
 
-
   render() {
 
     return (
-
-      <View style = {{ flex: 1}}>
+      <View style = {{ flex: 1 }}>
         <ImageBackground source={ require('../assets/Background-Image.png')} style = { styles.image }>
           <Text style = {styles.title}>ChatApp</Text>
 
@@ -53,19 +40,19 @@ export default class Start extends React.Component {
             </TextInput>
 
             <View style = {{height: '40%', marginVertical: '8%'}}>
-              <Text style = {{ fontFamily: 'Poppins-Regular', color: '#777', fontSize: 17}}>Choose Background Color:</Text>
+              <Text style = {styles.text}>Choose Background Color:</Text>
                <View style = {{ flexDirection: 'row', justifyContent: 'space-around', height: 40, marginVertical: '5%' }}>
-                <TouchableOpacity onPress={() => this.setState({ color: '#090C08' })} style={{minWidth: 37, backgroundColor: '#090C08', borderRadius: 20}}/> 
-                <TouchableOpacity onPress={() => this.setState({ color: '#474056' })} style={{minWidth: 37, backgroundColor: '#474056', borderRadius: 20}}/> 
-                <TouchableOpacity onPress={() => this.setState({ color: '#8A95A5' })} style={{minWidth: 37, backgroundColor: '#8A95A5', borderRadius: 20}}/>   
-                <TouchableOpacity onPress={() => this.setState({ color: '#B9C6AE' })} style={{minWidth: 37, backgroundColor: '#B9C6AE', borderRadius: 20}}/>
+                <TouchableOpacity onPress={() => this.setState({ color: '#090C08' })} style={{minWidth: 40, backgroundColor: '#090C08', borderRadius: 20}}/> 
+                <TouchableOpacity onPress={() => this.setState({ color: '#474056' })} style={{minWidth: 40, backgroundColor: '#474056', borderRadius: 20}}/> 
+                <TouchableOpacity onPress={() => this.setState({ color: '#8A95A5' })} style={{minWidth: 40, backgroundColor: '#8A95A5', borderRadius: 20}}/>   
+                <TouchableOpacity onPress={() => this.setState({ color: '#B9C6AE' })} style={{minWidth: 40, backgroundColor: '#B9C6AE', borderRadius: 20}}/>
               </View>
             </View>  
 
             <TouchableOpacity
               onPress = {() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })}
               style = {styles.startchatting}>
-              <Text style = {{ fontFamily: 'Poppins-Regular', color: '#FFF', fontSize: 16}} >Start Chatting</Text>
+              <Text style = {[styles.text, styles.colorWhite]} >Start Chatting</Text>
             </TouchableOpacity>  
     
           </View>
@@ -77,19 +64,19 @@ export default class Start extends React.Component {
 
 const styles = StyleSheet.create({
   title: { 
-    fontFamily: 'Poppins-Bold', 
+    fontFamily: 'Poppins-SemiBold', 
     fontSize: 45, 
     color: '#DEE', 
     alignSelf: 'center',
+    marginTop: '25%'
   },
   inputbox: { 
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF',
     padding: '6%', 
-    marginHorizontal: '6%',
+    margin: '6%',
     borderRadius: 4, 
     height: '44%',
     justifyContent: 'space-around',
-    marginTop: '25%'
   },
   choosecolor: {
     borderRadius: 20,
@@ -100,22 +87,23 @@ const styles = StyleSheet.create({
     height: 50, 
     fontFamily: 'Poppins-Regular',
     borderColor: '#aaa', 
-    padding: 10,
+    paddingHorizontal: 20,
     borderRadius: 4,
     borderWidth: 1.5,
     width: '100%'
   },
   text: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
+    fontSize: 17,
+    fontFamily: 'Poppins-Regular',
+    color: '#777',
+  },
+  colorWhite: {
+    color: '#FFF',
   },
   image: {
     flex: 1,
     resizeMode: 'cover',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   startchatting: {
     backgroundColor: '#757083', 
