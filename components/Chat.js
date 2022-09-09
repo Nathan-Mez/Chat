@@ -4,7 +4,6 @@ A page displaying the conversation, as well as an input field and submit button
 import React from 'react';
 import { Text, View, Platform, KeyboardAvoidingView, TouchableHighlightBase } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
-import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
 
 
 export default class Chat extends React.Component {
@@ -65,7 +64,7 @@ export default class Chat extends React.Component {
          },
          {
           _id: 2,
-          text: 'This is a system message',
+          text: 'You have entered Chat room',
           createdAt: new Date(),
           system: true,
          },
