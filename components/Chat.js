@@ -2,21 +2,47 @@
 A page displaying the conversation, as well as an input field and submit button 
 */
 import React from 'react';
-import { View, Text} from 'react-native';
-import * as Font from 'expo-font';
+import { Text, View, Platform, KeyboardAvoidingView, TouchableHighlightBase } from 'react-native';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { checkPluginState } from 'react-native-reanimated/lib/reanimated2/core';
 
-let customFonts = { 'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'), };
 
 export default class Chat extends React.Component {
 
-
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-    
+  constructor() {
+    super();
+    this.state = {
+      messages: [],
+    }
   }
+
+  onSend(messages = []) {
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, messages),
+    }))
+  }
+  
+
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          left: {
+            backgroundColor: '#E0DCCC',
+          },
+          right: {
+            backgroundColor: '#5475A0'
+          }
+        }}
+      />
+    );
+  }
+
 
   componentDidMount(){
     let name = this.props.route.params.name;
+
     if ( name === '') {                //Set navigation title to 'Chat Screen' if there's no userinput
       name = 'Chat Screen'
     }
@@ -24,8 +50,27 @@ export default class Chat extends React.Component {
     this.props.navigation.setOptions({ 
       title: name, 
     });
-    
-    this._loadFontsAsync();              //When component is mounted customFonts is loaded using '_loadFontsAsynd()' hook
+
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello Developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://placeimg.com/140/140/any',
+          },
+         },
+         {
+          _id: 2,
+          text: 'This is a system message',
+          createdAt: new Date(),
+          system: true,
+         },
+      ]
+    })
   }
   
 
@@ -34,10 +79,27 @@ export default class Chat extends React.Component {
     let color = this.props.route.params.color;
 
     return (
-      <View style={{flex:1, justifyContent: 'center', alignItems: 'center', backgroundColor: color}}>
-        <Text style = {{ fontFamily: 'Poppins-Regular', fontSize: 30}}> Hello {this.props.route.params.name} </Text>
-        <Text style = {{ fontSize: 20}}>This is Your Chat Screen</Text>
-      </View>
+      <View style={{flex: 1}}>
+        <GiftedChat
+          placeholder='Type Your Message'
+          showUserAvatar
+          alwaysShowSend
+
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
+          renderBubble={this.renderBubble}
+          listViewProps={{
+            style: {
+              backgroundColor: color,
+            },
+          }}
+          user={{
+            _id: 1,
+          }}
+        />
+        
+        { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+      </View>  
     )
   }
 }
