@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
 // import the screens
 import Start from './components/Start';
 import Chat from './components/Chat';
+import * as Font from 'expo-font';
 
 import 'react-native-gesture-handler';
 // import react Navigation
@@ -15,7 +15,21 @@ import { createStackNavigator } from '@react-navigation/stack';
   Regurns Object Naviation and Screen */
 const Stack = createStackNavigator();
 
+let customFonts = { 
+  'Poppins-Regular': require('./assets/fonts/Poppins-Regular.ttf'),
+  'Poppins-SemiBold': require('./assets/fonts/Poppins-SemiBold.ttf'),
+ };
+
 export default class chatApp extends Component {
+
+  async _loadFontsAsync() {
+    await Font.loadAsync(customFonts);
+  }
+
+  componentDidMount() {
+    this._loadFontsAsync();              //When component is mounted customFonts is loaded using '_loadFontsAsynd()' hook
+  }
+
   render() {
     return (
       <NavigationContainer>
