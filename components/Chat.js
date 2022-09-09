@@ -81,7 +81,6 @@ export default class Chat extends React.Component {
       <View style={{flex: 1}}>
         <GiftedChat
           placeholder='Type Your Message'
-          showUserAvatar
           alwaysShowSend
 
           messages={this.state.messages}
