@@ -2,8 +2,8 @@
 A page displaying the conversation, as well as an input field and submit button 
 */
 import React from 'react';
-import { Text, View, Platform, KeyboardAvoidingView, TouchableHighlightBase } from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { Image, View, Platform, KeyboardAvoidingView } from 'react-native';
+import { GiftedChat, Bubble, Send, SystemMessage } from 'react-native-gifted-chat'
 
 
 export default class Chat extends React.Component {
@@ -20,11 +20,10 @@ export default class Chat extends React.Component {
       messages: GiftedChat.append(previousState.messages, messages),
     }))
   }
-  
 
   renderBubble(props) {
     return (
-      <Bubble
+      <Bubble                             //Message bubble styling
         {...props}
         wrapperStyle={{
           left: {
@@ -37,6 +36,16 @@ export default class Chat extends React.Component {
       />
     );
   }
+
+  renderSend(props) {
+    return (
+        <Send {...props}>
+            <View style={{ justifyContent: 'center'}}>
+                <Image source={require('../assets/send.png')} resizeMode={'center'}/>
+            </View>
+        </Send>
+    );
+}
 
 
   componentDidMount(){
@@ -54,7 +63,7 @@ export default class Chat extends React.Component {
       messages: [
         {
           _id: 1,
-          text: 'Hello Developer',
+          text: 'Hello, How do you do?',
           createdAt: new Date(),
           user: {
             _id: 2,
@@ -82,7 +91,8 @@ export default class Chat extends React.Component {
         <GiftedChat
           placeholder='Type Your Message'
           alwaysShowSend
-
+          renderSend={this.renderSend}
+          //textInputStyle={{backgroundColor: '#DDD', margin: 10}}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           renderBubble={this.renderBubble}
