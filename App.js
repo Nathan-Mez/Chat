@@ -27,7 +27,7 @@ export default class chatApp extends Component {
   }
 
   componentDidMount() {
-    this._loadFontsAsync();              //When component is mounted customFonts is loaded using '_loadFontsAsynd()' hook
+    this._loadFontsAsync();              //When component is mounted customFonts is loaded using '_loadFontsAsync()' hook
   }
 
   render() {
