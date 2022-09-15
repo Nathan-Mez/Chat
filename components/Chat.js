@@ -16,7 +16,6 @@ export default class Chat extends React.Component {
     this.state = {
       uid: 0,
       messages: [],
-      avatar: "",
     }
     
     //Connect to firebase Database
@@ -89,7 +88,6 @@ addMessages() {
       this.setState({
         uid: user.uid,
         messages: [],
-        avatar: "https://placeimg.com/140/140/people"
       });
 
       this.referenceMessages = firebase.firestore().collection('messages');
@@ -165,7 +163,7 @@ renderSend(props) {                    //Send - custom styling
           }}
           user={{
             _id: this.state.uid,
-            avatar: this.state.avatar,
+            avatar: "https://placeimg.com/140/140/people",
           }}
         />
         
