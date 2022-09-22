@@ -141,8 +141,10 @@ async deleteMessages() {                         //Clear messages in asyncStorag
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
-    this.authUnsubscribe();
+    if (this.state.isConnected){
+      this.unsubscribe();
+      this.authUnsubscribe();
+    }
  }
 
  /*========================================================
