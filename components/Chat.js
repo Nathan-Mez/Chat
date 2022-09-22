@@ -3,7 +3,9 @@ A page displaying the conversation, as well as an input field and submit button
 */
 import React from 'react';
 import { Image, View, Platform, KeyboardAvoidingView } from 'react-native';
-import { GiftedChat, Bubble, Send, SystemMessage } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Send, InputToolbar } from 'react-native-gifted-chat';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from '@react-native-community/netinfo';
 
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -16,6 +18,7 @@ export default class Chat extends React.Component {
     this.state = {
       uid: 0,
       messages: [],
+      isConnected: undefined,
     }
     
     //Connect to firebase Database
@@ -55,7 +58,7 @@ onCollectionUpdate = (querySnapshot) => {
   });
 }  
 
-addMessages() {
+addMessages() {                                 //Add last message to database
   const message = this.state.messages[0];
   this.referenceMessages.add({
     _id: message._id,
@@ -63,9 +66,38 @@ addMessages() {
     createdAt: message.createdAt,
     user: message.user,
   });
-}  
+} 
 
+async getMessages() {                            //save messages to storage once state object is updated
+  let messages = '';
+  try {
+    messages = await AsyncStorage.getItem('messages') || [];
+    this.setState({
+      messages: JSON.parse(messages)
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+async saveMessages() {                            //save messge to asyncStorage using the setItem() method
+  try {
+    await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async deleteMessages() {                         //Clear messages in asyncStorage
+  try {
+    await AsyncStorage.removeItem('messages');
+    this.setState({
+      messages: []
+    })
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 /*=================================================================
         component did mount, will unmount or unmount
@@ -81,18 +113,31 @@ addMessages() {
       title: name, 
     });
 
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        firebase.auth().signInAnonymously();
+    NetInfo.fetch().then(connection => {
+      if (connection.isConnected) {
+        this.setState({ isConnected: true });
+      } else {
+        this.setState({ isConnected: false });
       }
-      this.setState({
-        uid: user.uid,
-        messages: [],
-      });
-
-      this.referenceMessages = firebase.firestore().collection('messages');
-      this.unsubscribe = this.referenceMessages.orderBy("createdAt", "desc").onSnapshot(this.onCollectionUpdate);
     });
+
+    if (this.state.isConnected == false){
+      this.getMessages();
+    }else{
+      this.getMessages();
+      this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+          firebase.auth().signInAnonymously();
+        }
+        this.setState({
+          uid: user.uid,
+          messages: [],
+        });
+  
+        this.referenceMessages = firebase.firestore().collection('messages');
+        this.unsubscribe = this.referenceMessages.orderBy("createdAt", "desc").onSnapshot(this.onCollectionUpdate);
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -109,6 +154,7 @@ onSend(messages = []) {
     messages: GiftedChat.append(previousState.messages, messages),
   }),() => {
     this.addMessages();
+    this.saveMessages();
   });
 }
 renderBubble(props) {
@@ -137,6 +183,17 @@ renderSend(props) {                    //Send - custom styling
   );
 }
 
+renderInputToolbar(props) {             //hide input bar when user is offline
+  if (this.state.isConnected == false) {
+  } else {
+    return(
+      <InputToolbar
+      {...props}
+      />
+    );
+  }
+}
+
 /*========================================================================= 
                    Render 
 ============================================================================*/
@@ -152,7 +209,7 @@ renderSend(props) {                    //Send - custom styling
           placeholder='Type Your Message'
           alwaysShowSend
           renderSend={this.renderSend}
-          //textInputStyle={{backgroundColor: '#DDD', margin: 10}}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           renderBubble={this.renderBubble}
