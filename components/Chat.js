@@ -6,6 +6,8 @@ import { Image, View, Platform, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Bubble, Send, InputToolbar } from 'react-native-gifted-chat';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -196,6 +198,10 @@ renderInputToolbar(props) {             //hide input bar when user is offline
   }
 }
 
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+};
+
 /*========================================================================= 
                    Render 
 ============================================================================*/
@@ -211,6 +217,7 @@ renderInputToolbar(props) {             //hide input bar when user is offline
           placeholder='Type Your Message'
           alwaysShowSend
           renderSend={this.renderSend}
+          renderActions={this.renderCustomActions}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
