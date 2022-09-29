@@ -53,6 +53,8 @@ onCollectionUpdate = (querySnapshot) => {
       text: data.text,
       createdAt: data.createdAt.toDate(),
       user: data.user,
+      image: data.image || null,
+      location: data.location || null,
     });
   });
   this.setState({
@@ -67,6 +69,8 @@ addMessages() {                                 //Add last message to database
     text: message.text || "",
     createdAt: message.createdAt,
     user: message.user,
+    image: newMessage.image || null,
+    location: newMessage.location || null,
   });
 } 
 
@@ -196,6 +200,27 @@ renderInputToolbar(props) {             //hide input bar when user is offline
       />
     );
   }
+}
+
+renderCustomView (props) {
+  const { currentMessage} = props;
+  if (currentMessage.location) {
+    return (
+        <MapView
+          style={{width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3}}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+    );
+  }
+  return null;
 }
 
 renderCustomActions = (props) => {
