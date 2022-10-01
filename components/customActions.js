@@ -1,33 +1,33 @@
+import React from "react";
 import PropTypes from 'prop-types';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import firebase from 'firebase';
-
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import MapView from 'react-native-maps';
+
+import firebase from "firebase";
+import 'firebase/firestore';
 
 
-export default class CustomActions extends React.Component {
+class CustomActions extends React.Component {
 
   uploadImageFetch = async (uri) => {
     const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-            resolve(xhr.response);
-        };
-        xhr.onerror = function (e) {
-            console.log(e);
-            reject(new TypeError("Network request failed"));
-        };
-        xhr.responseType = "blob";
-        xhr.open("GET", uri, true);
-        xhr.send(null);
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
     });
 
-    const imageNameBefore = uri.split("/");
+    const imageNameBefore = uri.split('/');
     const imageName = imageNameBefore[imageNameBefore.length - 1];
 
     const ref = firebase.storage().ref().child(`images/${imageName}`);
@@ -37,78 +37,95 @@ export default class CustomActions extends React.Component {
     blob.close();
 
     return await snapshot.ref.getDownloadURL();
-};
+  }
 
+   //Enble user to pick image from image Library
+    
     pickImage = async () => {
-        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-     
-        if(status === 'granted') {
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'Images',
-          }).catch(error => console.log(error));
-     
-          if (!result.cancelled) {
-            const imgURI = await this.uploadImageFetch(result.uri);
-            this.props.addMessages({ image: imgURI});  
-          }
-     
-        }
-    }  
-
-    takePhoto = async () => {
-        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY, Permissions.CAMERA);
-
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      try {
         if (status === 'granted') {
-            let result = await ImagePicker.launchCameraAsync({
-                mediaTypes: 'Images',
-            }).catch(error => console.log(error));
-
-            if (!result.cancelled) {
-                const imgURI = await this.uploadImageFetch(result.uri);
-                this.props.addMessages({ image: imgURI}); 
-              }
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          }).catch((error) => console.log(error));
+  
+          if (!result.cancelled) {
+            const imageUrl = await this.uploadImageFetch(result.uri);
+            this.props.onSend({ image: imageUrl })
+          }
         }
-    }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };  
 
-    getLocation = async () => {
-      const { status } = await Permissions.askAsync(Permissions.LOCATION);
-      if(status === 'granted') {
-        let result = await Location.getCurrentPositionAsync({});
-   
+   //Enable user to take photo using device camera
+
+   takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    try {
+      if (status === 'granted') {
+        let result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        }).catch((error) => console.log(error));
+
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImageFetch(result.uri);
+          this.props.onSend({ image: imageUrl });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  //Locate user location
+
+  getLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    try {
+      if (status === 'granted') {
+        let result = await Location.getCurrentPositionAsync({
+        }).catch((error) => console.log(error));
+        const longitude = JSON.stringify(result.coords.longitude);
+        const latitude = JSON.stringify(result.coords.latitude);
         if (result) {
-          this.props.addMessages({
+          this.props.onSend({
             location: {
               longitude: result.coords.longitude,
               latitude: result.coords.latitude,
-            }
+            },
           });
         }
       }
+    } catch (error) {
+      console.log(error.message);
     }
+  };
 
-    onActionPress = () => {
-      const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
-      const cancelButtonIndex = options.length - 1;
-      this.context.actionSheet().showActionSheetWithOptions(
-          {
-              options,
-              cancelButtonIndex,
-          },
-          async (buttonIndex) => {
-              switch (buttonIndex) {
-                  case 0:
-                      console.log('user wants to pick an image');
-                      return this.pickImage();
-                  case 1:
-                      console.log('user wants to take a photo');
-                      return this.takePhoto();
-                  case 2:
-                      console.log('user wants to get their location');
-                      return this.getLocation();
-                  default:
-              }
-          },
-      );
+  onActionPress = () => {
+    const options = ['Choose from Library', 'Take Picture', 'Send Location', 'Cancel'];
+    const cancelButtonIndex = options.length - 1;
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      async (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            console.log('user wants to pick an image');
+            return this.pickImage();
+          case 1:
+            console.log('user wants to take a photo');
+            return this.takePhoto();
+          case 2:
+            console.log('user wants to get their location');
+            return this.getLocation();
+          default:
+        }
+      },
+    );
   };  
 
 
@@ -133,22 +150,26 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderRadius: 13,
-    borderColor: '#b2b2b2',
+    borderColor: '#000',
     borderWidth: 2,
     flex: 1,
   },
   iconText: {
-    color: '#b2b2b2',
+    color: '#000',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
     backgroundColor: 'transparent',
-    textAlign: 'center',
+    textAlign: 'center'
   },
  });
 
 
  CustomActions.contextTypes = {
   actionSheet: PropTypes.func,
- };
+};
+
+const ConnectedApp = connectActionSheet(CustomActions);
+
+export default ConnectedApp;
 
 
