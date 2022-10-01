@@ -65,12 +65,13 @@ onCollectionUpdate = (querySnapshot) => {
 addMessages() {                                 //Add last message to database
   const message = this.state.messages[0];
   this.referenceMessages.add({
+    uid: this.state.uid,
     _id: message._id,
-    text: message.text || "",
+    text: message.text || " ",
     createdAt: message.createdAt,
     user: message.user,
-    image: newMessage.image || null,
-    location: newMessage.location || null,
+    image: message.image || null,
+    location: message.location || null,
   });
 } 
 
@@ -209,8 +210,8 @@ renderCustomView (props) {
         <MapView
           style={{width: 150,
             height: 100,
-            borderRadius: 13,
-            margin: 3}}
+            borderRadius: 30,
+            margin: 7}}
           region={{
             latitude: currentMessage.location.latitude,
             longitude: currentMessage.location.longitude,
@@ -243,6 +244,7 @@ renderCustomActions = (props) => {
           alwaysShowSend
           renderSend={this.renderSend}
           renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
